@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tutorial.crudprocedure.entity.Coche;
+import com.tutorial.crudprocedure.model.CarsBrands;
+import com.tutorial.crudprocedure.model.CarsModels;
+import com.tutorial.crudprocedure.repository.CarsReportsRepository;
 import com.tutorial.crudprocedure.repository.CocheRepository;
 
 @Service
@@ -15,26 +18,34 @@ public class CocheService {
 
     @Autowired
     CocheRepository cocheRepository;
-    String message;
+    
+    @Autowired
+    CarsReportsRepository carsReportsRepository;
+    
+    private String message;
 
-    public List<Coche> getAll(){
-        return cocheRepository.findAll();
+    public List<Coche> findAll(){
+        return cocheRepository.spFindAll();
     }
 
-    public Optional<Coche> getById(int id){
+    public Optional<Coche> findById(int id){
         return cocheRepository.spFindById(id);
     }
 
-    public List<Coche> getByBrand(String marca){
-        return cocheRepository.findByBrand(marca);
+    public List<Coche> findByBrandsAndOrModels(int type, String brand, String model){
+        return cocheRepository.spFindByBrandsAndOrModels(type, brand, model);
     }
 
     public void saveCar(Coche car){
-        cocheRepository.save(car);
+        cocheRepository.spSave(car.getMarca(), car.getModelo(), car.getAnyo(), car.getKm());
+    }
+    
+    public void saveCars(List<Coche> cars){
+        cocheRepository.saveAll(cars);
     }   
     
     public String updateCar(Coche car, int id){
-    	message = "Not found Car";
+    	message = "Not Found Car";
     	
     	cocheRepository.findById(id).ifPresent((c) -> {
     		car.setId(id);
@@ -46,10 +57,27 @@ public class CocheService {
     }
 
     public float getAverageKm(){
-        return cocheRepository.getAverageKm();
+        return cocheRepository.spGetAverageKm();
     }
 
     public void deleteById(int id){
-        cocheRepository.deleteById(id);
+        cocheRepository.spDeleteById(id);
+    }
+    
+    //Reports
+    public List<CarsBrands> getReports(int type, String brand){        		
+    	return carsReportsRepository.getReports(type, brand);	
+    }
+    
+    public List<CarsModels> getReports(int type, String brand, String model){
+    	return carsReportsRepository.getReports(type, brand, model);
+    }
+    
+    public List<CarsBrands> spGetReports(int type, String brand){        		
+    	return carsReportsRepository.spGetReports(type, brand);	
+    }
+    
+    public List<CarsModels> spGetReports(int type, String brand, String model){        		
+    	return carsReportsRepository.spGetReports(type, brand, model);	
     }
 }

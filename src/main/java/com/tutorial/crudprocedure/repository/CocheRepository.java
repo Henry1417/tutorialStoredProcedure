@@ -14,7 +14,7 @@ import com.tutorial.crudprocedure.entity.Coche;
 public interface CocheRepository extends JpaRepository<Coche, Integer> {
 
     @Query(value = "{call lista_procedure()}", nativeQuery = true)
-    List<Coche> findAll();
+    List<Coche> spFindAll();
 
     // When the query no return data, List return a empty list []
 //    @Query(value = "{call id_procedure(:idIn)}", nativeQuery = true)
@@ -24,8 +24,11 @@ public interface CocheRepository extends JpaRepository<Coche, Integer> {
     @Query(value = "{call id_procedure(:idIn)}", nativeQuery = true)
     Optional<Coche> spFindById(@Param("idIn") int idIn);
 
-    @Query(value = "{call marca_procedure(:marcaIn)}", nativeQuery = true)
-    List<Coche> findByBrand(@Param("marcaIn") String marcaIn);    
+    @Query(value = "{call marca_procedure(:typeIn, :brandIn, :modelIn)}", nativeQuery = true)
+    List<Coche> spFindByBrandsAndOrModels(
+    		@Param("typeIn") int typeIn,
+    		@Param("brandIn") String brandIn, 
+    		@Param("modelIn") String modelIn);
 
     @Query(value = "{call save_procedure(:marcaIn, :modeloIn, :anyoIn, :kmIn)}", nativeQuery = true)
     void spSave(
@@ -36,8 +39,8 @@ public interface CocheRepository extends JpaRepository<Coche, Integer> {
     );
 
     @Query(value = "{call media_procedure()}", nativeQuery = true)
-    float getAverageKm();
+    float spGetAverageKm();
 
     @Query(value = "{call borrar_procedure(:idIn)}", nativeQuery = true)
-    void deleteById(@Param("idIn") int idIN);
+    void spDeleteById(@Param("idIn") int idIN);    
 }

@@ -10,14 +10,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_procedure`()
 SELECT * FROM coche$$
 DELIMITER ;
 
-# LISTA DE COCHES POR MARCA
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `marca_procedure`(IN `marcaIn` VARCHAR(255))
-    READS SQL DATA
-SELECT * FROM coche WHERE marca = marcaIn$$
-DELIMITER ;
-
 # COCHE A PARTIR DEL ID
 
 DELIMITER $$
@@ -50,3 +42,30 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `media_procedure`()
 SELECT AVG(km) FROM coche$$
 DELIMITER ;
 
+# Modified Object
+# Car lisy by brand and model
+DROP PROCEDURE IF EXISTS marca_procedure;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `marca_procedure`(
+    IN `typeIn` int, IN `brandIn` VARCHAR(255), IN `modelIn` VARCHAR(100))
+    READS SQL DATA
+if typeIn = 1 then
+    SELECT * FROM coche WHERE marca = brandIn;
+elseIF typeIn = 2 then
+    SELECT * FROM coche WHERE marca = brandIn and modelo = modelIn;
+end if
+
+# Added Objects
+# Get Reports
+DROP PROCEDURE IF EXISTS sp_reports;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_reports`(
+    IN `typeIn` int, IN `brandIn` VARCHAR(100), IN `modelIn` VARCHAR(100))
+    READS SQL DATA
+if typeIn = 1 then
+    SELECT marca, count(1) total FROM coche group by marca;
+elseIF typeIn = 2 then
+    SELECT marca, count(1) total FROM coche where marca=brandIn group by marca;
+elseIF typeIn = 3 then
+    SELECT modelo, count(1) total FROM coche where marca=brandIn group by modelo;
+elseIF typeIn = 4 then
+    SELECT modelo, count(1) total FROM coche where marca=brandIn and modelo=modelIn group by modelo;
+end if
